@@ -1,4 +1,4 @@
-<%--
+<%-- 
     Document   : dashboard
     Created on : 27-Sep-2016, 08:11:57
     Author     : ccchia.2014
@@ -85,7 +85,7 @@
                 %>
                 <a href="addLecture.jsp">Add Lecture</a></br>
                 <a href="addUser.jsp">Add User</a>
-                <form action="editKeywords.jsp" method="post">
+                <form action="editKeywords.jsp">
                     <select name="lectureID">
                     <%
                         for(String lectureID: lectureDAO.getAllLectureIDs()){
@@ -95,23 +95,10 @@
                         }
                     %>  
                     </select>
-                    <button type="submit">Edit Lecture Keywords</button>
-                </form>
-                <form action="addPastResponses.jsp" method="post">
-                    <select name="lectureID">
-                    <%
-                        for(String lectureID: lectureDAO.getAllLectureIDs()){
-                    %>
-                        <option value=<%= lectureID %>><%= lectureID.replace("_", " ") %></option>
-                    <%
-                        }
-                    %>  
-                    </select>
-                    <button type="submit">[DEV] Add Past Responses</button>
+                    <button type="submit">Edit Lecture Keywords</a>
                 <%
                     }
                 %>
-                </form>
             </div>
             <div class="backButton">
                 <button onclick="goBack()">Go Back</button>            

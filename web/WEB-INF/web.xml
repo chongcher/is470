@@ -20,10 +20,6 @@
         <servlet-name>editKeywordsServlet</servlet-name>
         <servlet-class>controller.editKeywordsServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>addPastResponsesServlet</servlet-name>
-        <servlet-class>controller.addPastResponsesServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -43,10 +39,6 @@
     <servlet-mapping>
         <servlet-name>editKeywordsServlet</servlet-name>
         <url-pattern>/editKeywordsServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>addPastResponsesServlet</servlet-name>
-        <url-pattern>/addPastResponsesServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
