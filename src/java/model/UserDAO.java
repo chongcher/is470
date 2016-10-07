@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import utility.BCrypt;
 import static utility.BCrypt.gensalt;
 import utility.ConnectionManager;
@@ -58,6 +59,45 @@ public class UserDAO {
             }
         }
         catch (SQLException e){
+            e.printStackTrace();
+        }
+        return success;
+    }
+    
+    public boolean batchAddUser(ArrayList<HashMap<String, String>> userData) {
+        boolean success;
+        success = true;
+        String sql = "INSERT INTO USERS VALUES(?,?,?)";
+        int counter = 0;
+        try(Connection conn = ConnectionManager.getConnection()){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            for (HashMap<String, String> thisUser : userData) {
+                String passwordHash = BCrypt.hashpw((String)thisUser.get("passwordHash"), (String)BCrypt.gensalt());
+                stmt.setString(1, thisUser.get("userID"));
+                stmt.setString(2, passwordHash);
+                stmt.setBoolean(3, Boolean.parseBoolean(thisUser.get("isFaculty")));
+                stmt.addBatch();
+                counter++;
+                if(counter >= 10){
+                    int[] rowsChanged = stmt.executeBatch();
+                    for(int i: rowsChanged){
+                        if(i != 1) success = false;
+                    }
+                    stmt.clearBatch();
+                    counter = 0;
+                }
+            }
+            if (counter > 0) {
+                int[] rowsChanged = stmt.executeBatch();
+                for(int i: rowsChanged){
+                    if(i != 1) success = false;
+                }
+            }
+            if (success) {
+                this.allUsers = this.readDatabase();
+            }
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
         return success;

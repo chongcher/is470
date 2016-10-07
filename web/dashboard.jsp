@@ -78,11 +78,11 @@
                     }
                 %>
             </table>
+            <%
+                if(null != session.getAttribute("isFaculty") && (Boolean) session.getAttribute("isFaculty")){
+            %>
             <div class="adminFunctions">
                 <h2>Administrative Functions</h2>
-                <%
-                    if(null != session.getAttribute("isFaculty") && (Boolean) session.getAttribute("isFaculty")){
-                %>
                 <a href="addLecture.jsp">Add Lecture</a></br>
                 <a href="addUser.jsp">Add User</a>
                 <form action="editKeywords.jsp">
@@ -95,7 +95,20 @@
                         }
                     %>  
                     </select>
-                    <button type="submit">Edit Lecture Keywords</a>
+                    <button type="submit">Edit Lecture Keywords</button>
+                </form>
+                <form action="addPastResponses.jsp">
+                    <select name="lectureID">
+                    <%
+                        for(String lectureID: lectureDAO.getAllLectureIDs()){
+                    %>
+                        <option value=<%= lectureID %>><%= lectureID.replace("_", " ") %></option>
+                    <%
+                        }
+                    %>  
+                    </select>
+                    <button type="submit">[DEV] Add Past Responses</button>
+                </form>
                 <%
                     }
                 %>

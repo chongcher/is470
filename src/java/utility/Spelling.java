@@ -53,7 +53,6 @@ public class Spelling {
                 spellcheckedData = new ArrayList<String>();
                 Spelling dictionary = new Spelling("./data/dictionary.txt");
                 for(String s: rawData){
-                    System.out.println("s => " + dictionary.correct(s));
                     spellcheckedData.add(dictionary.correct(s));
                 }
             }
