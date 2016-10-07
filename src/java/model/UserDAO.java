@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import utility.BCrypt;
 import static utility.BCrypt.gensalt;
 import utility.ConnectionManager;
@@ -48,7 +49,7 @@ public class UserDAO {
         boolean success = false;
         String passwordHash = BCrypt.hashpw(candidate, gensalt());
         try(Connection conn = ConnectionManager.getConnection();){
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO USERS VALUES(?,?,?);");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO USERS VALUES(?,?,?)");
             stmt.setString(1, userID);
             stmt.setString(2, passwordHash);
             stmt.setBoolean(3, isFaculty);
@@ -56,6 +57,46 @@ public class UserDAO {
             if(1 == rowsChanged && allUsers.add(new User(userID, passwordHash, isFaculty))){
                 success = true;
             }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return success;
+    }
+    
+    public boolean batchAddUser(ArrayList<HashMap<String,String>> userData){
+        boolean success = true;
+        String sql = "INSERT INTO USERS VALUES(?,?,?)";
+        int counter = 0;
+        try(Connection conn = ConnectionManager.getConnection();){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            for(HashMap<String,String> thisUser: userData){
+                String passwordHash = BCrypt.hashpw(thisUser.get("passwordHash"), gensalt());
+                stmt.setString(1, thisUser.get("userID"));
+                stmt.setString(2, passwordHash);
+                stmt.setBoolean(3, Boolean.parseBoolean(thisUser.get("isFaculty")));
+                stmt.addBatch();
+                counter += 1;
+                if(counter >= 10){
+                    int[] rowsChanged = stmt.executeBatch();
+                    for(int i: rowsChanged){
+                        if(1 != i){
+                            success = false;
+                        }
+                    }
+                    stmt.clearBatch();
+                    counter = 0;
+                }
+            }
+            if(counter > 0){
+                int[] rowsChanged = stmt.executeBatch();
+                for(int i: rowsChanged){
+                    if(1 != i){
+                        success = false;
+                    }
+                }
+            }
+            if(success) this.allUsers = readDatabase();
         }
         catch (SQLException e){
             e.printStackTrace();

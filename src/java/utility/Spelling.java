@@ -51,9 +51,11 @@ public class Spelling {
             }
             else{
                 spellcheckedData = new ArrayList<String>();
+                //File currentDirectory = new File(new File(".").getAbsolutePath());
+                //System.out.println(currentDirectory.getCanonicalPath());
+                //System.out.println(currentDirectory.getAbsolutePath());
                 Spelling dictionary = new Spelling("./data/dictionary.txt");
                 for(String s: rawData){
-                    System.out.println("s => " + dictionary.correct(s));
                     spellcheckedData.add(dictionary.correct(s));
                 }
             }

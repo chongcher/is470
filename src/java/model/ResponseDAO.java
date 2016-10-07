@@ -107,4 +107,44 @@ public class ResponseDAO {
         }
         return keywordCount;
     }
+
+    public boolean batchAddResponse(ArrayList<HashMap<String, String>> responseData) {
+        boolean success = true;
+        int counter = 0;
+        String sql = "INSERT INTO RESPONSES VALUES (?,?,?,?)";
+        try(Connection conn = ConnectionManager.getConnection();){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            for(HashMap<String,String> thisUser: responseData){
+                stmt.setString(1, thisUser.get("userID"));
+                stmt.setString(2, thisUser.get("lectureID"));
+                stmt.setString(3, thisUser.get("response"));
+                stmt.setString(4, thisUser.get("keywords"));
+                stmt.addBatch();
+                counter += 1;
+                if(counter >= 10){
+                    int[] rowsChanged = stmt.executeBatch();
+                    for(int i: rowsChanged){
+                        if(1 != i){
+                            success = false;
+                        }
+                    }
+                    stmt.clearBatch();
+                    counter = 0;
+                }
+            }
+            if(counter > 0){
+                int[] rowsChanged = stmt.executeBatch();
+                for(int i: rowsChanged){
+                    if(1 != i){
+                        success = false;
+                    }
+                }
+            }
+            if(success) this.allResponses = readDatabase();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return success;
+    }
 }
