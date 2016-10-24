@@ -26,17 +26,22 @@ public class ConnectionManager {
 
   private static boolean readOpenshiftDatabaseProperties() {
     // grab environment variable
-    String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+    //String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+    String host = System.getProperty("JDBC_CONNECTION_STRING");
+    System.out.println("RDS host: " + host);
 
     if (host == null) {
       return false;
     }
     // this is production environment
     // obtain database connection properties from environment variables
-    String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
+    //String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
+    String port = "3306";
     String dbName = "IS470";
-    dbUser = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
-    dbPassword = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+    //dbUser = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
+    //dbPassword = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+    dbUser = System.getProperty("JDBC_USERNAME");
+    dbPassword = System.getProperty("JDBC_PASSWORD");
 
     dbURL = "jdbc:mysql://" + host + ":" + port + "/" + dbName + "?characterEncoding=UTF-8";
     return true;

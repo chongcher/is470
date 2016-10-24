@@ -79,7 +79,7 @@ public class ResponseDAO {
         }
     }
     
-    public boolean batchAddResponse(ArrayList<HashMap<String, String>> responseData) {
+    public boolean batchAddResponse(ArrayList<HashMap<String, String>> responseData) { //TODO update this to accept Spelling_Corrector_1/2/3!
         boolean success = true;
         int counter = 0;
         String sql = "INSERT INTO RESPONSES VALUES (?,?,?,?)";

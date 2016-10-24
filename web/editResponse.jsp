@@ -29,7 +29,7 @@
                 %>
                 <h2><%= lectureID.replace("_", " ") %> Response</h2>
                 <input type="hidden" name="lectureID" value=<%= lectureID %>>
-                <textarea rows="4" cols="50" name="response" placeholder="Enter keywords here"></textarea></br>
+                <textarea rows="4" cols="50" name="response" placeholder="Enter keywords here" autofocus="true"></textarea></br>
                 <button type="submit">Submit response</button>
             </form>
         </div>
