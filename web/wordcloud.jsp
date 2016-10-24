@@ -4,6 +4,9 @@
     Author     : ccchia.2014
 --%>
 
+<%@page import="java.util.Arrays"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.google.common.collect.Lists"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="model.ResponseDAO"%>
@@ -24,6 +27,17 @@
             }
             ResponseDAO responseDAO = (ResponseDAO) session.getAttribute("responseDAO");
             HashMap<String,Integer> keywordCount = responseDAO.getKeywordCount(lectureID);
+            String[] filteredWordsList = request.getParameterValues("filteredWords[]");
+            ArrayList<String> filteredWords = new ArrayList<String>();
+            if(null != filteredWordsList){
+                filteredWords = new ArrayList<String>(Arrays.asList(filteredWordsList));
+                if(null != filteredWords && filteredWords.size()> 0){
+                    for(String s: filteredWords){
+                        //make the keyword count negative so it does not appear in the wordcloud
+                        keywordCount.put(s,-1);
+                    }
+                }
+            }
             Gson gson = new Gson();
             String json = gson.toJson(keywordCount);
         %>
@@ -52,8 +66,33 @@
         </script>
     </head>
     <body>
-        <canvas id="wordcloud_canvas" width="600" height="600" style="border:1px solid #000000;"></canvas></br>
-        <button onclick="goBack()">Go Back</button>
+        <div class="header">
+        </div>
+        <div class="body">
+            <canvas id="wordcloud_canvas" width="600" height="600" style="border:1px solid #000000;"></canvas></br>
+            
+            <h2>Filter Words</h2>
+            <form action="wordcloud.jsp" method="post">
+                <input type="hidden" name="lectureID" value=<%= "\"" + lectureID + "\"" %>>
+                <table>
+                    <%
+                        for(String s: keywordCount.keySet()){
+                            boolean alreadyFiltered = filteredWords.contains(s);
+                        %>
+                            <tr>
+                                <td><%= s %></td>
+                                <td><input type="checkbox" name="filteredWords[]" value=<%= "\"" + s + "\""%> <% if(alreadyFiltered) out.println("checked");%>></td>
+                            </tr>
+                        <%
+                        }
+                    %>
+                </table>
+                <button type="submit">Filter selected words</button>
+            </form>
+        </div>
+        <div class="footer">
+            <button onclick="goBack()">Go Back</button>
+        </div>
     </body>
 </html>
 
