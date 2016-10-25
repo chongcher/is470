@@ -38,11 +38,14 @@ public class LuceneSpellChecker {
                 String[] wordSuggestions = spellchecker.suggestSimilar(word, 5);
                 ArrayList<String> uniqueSuggestions = new ArrayList<String>();
                 for(String s: wordSuggestions){
-                    if(!uniqueSuggestions.contains(s)){
+                    if(!uniqueSuggestions.contains(s) && !s.trim().equals(s)){
                         uniqueSuggestions.add(s);
                     }
                 }
-                suggestions.put(word, uniqueSuggestions);
+                if(uniqueSuggestions.size() > 0){
+                    //only add to suggestions if there are unique suggestions
+                    suggestions.put(word, uniqueSuggestions);
+                }
             }
         }
         

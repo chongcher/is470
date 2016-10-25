@@ -85,6 +85,8 @@
                             </tr>
                         <%
                         }
+                        //clear filteredWords from session
+                        request.setAttribute("filteredWords[]", new String[0]);
                     %>
                 </table>
                 <button type="submit">Filter selected words</button>

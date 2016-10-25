@@ -45,7 +45,7 @@ public class editResponseServlet extends HttpServlet {
             LuceneSpellChecker spellChecker = new LuceneSpellChecker();
             //Check spelling of userResponse
             HashMap<String, ArrayList<String>> suggestions = spellChecker.getSuggestions(new ArrayList<String>(Arrays.asList(userResponse.split("\\W+"))));
-            if(suggestions.keySet().size() >= 0){
+            if(suggestions.keySet().size() > 0){
                 RequestDispatcher rd = request.getRequestDispatcher("/displaySuggestions.jsp");
                 HttpSession session = request.getSession();
                 request.setAttribute("suggestions", suggestions);
@@ -55,7 +55,6 @@ public class editResponseServlet extends HttpServlet {
                 return;
             }
         } else {
-            //TODO get form replies and edit response
             int totalSuggestions = Integer.parseInt(request.getParameter("totalSuggestions"));
             for(int i = 1; i <= totalSuggestions; i++){
                 String inputName = "suggestion" + i;
