@@ -42,18 +42,23 @@ public class editResponseServlet extends HttpServlet {
         String lectureID = request.getParameter("lectureID");
         String userResponse = request.getParameter("response");
         if(null == request.getParameter("hasSpellingCorrections") || "".equals(request.getParameter("hasSpellingCorrections"))){
-            LuceneSpellChecker spellChecker = new LuceneSpellChecker();
-            //Check spelling of userResponse
-            HashMap<String, ArrayList<String>> suggestions = spellChecker.getSuggestions(new ArrayList<String>(Arrays.asList(userResponse.split("\\W+"))));
-            if(suggestions.keySet().size() > 0){
-                RequestDispatcher rd = request.getRequestDispatcher("/displaySuggestions.jsp");
-                HttpSession session = request.getSession();
-                request.setAttribute("suggestions", suggestions);
-                request.setAttribute("userResponse", userResponse);
-                request.setAttribute("lectureID", lectureID);
-                rd.forward(request, response);
-                return;
+            //only do spell check if response has words!
+            if(!userResponse.trim().equals("")){
+                System.out.println("response: \"" + userResponse + "\"");
+                LuceneSpellChecker spellChecker = new LuceneSpellChecker();
+                //Check spelling of userResponse
+                HashMap<String, ArrayList<String>> suggestions = spellChecker.getSuggestions(new ArrayList<String>(Arrays.asList(userResponse.split("\\W+"))));
+                if(suggestions.keySet().size() > 0){
+                    RequestDispatcher rd = request.getRequestDispatcher("/displaySuggestions.jsp");
+                    HttpSession session = request.getSession();
+                    request.setAttribute("suggestions", suggestions);
+                    request.setAttribute("userResponse", userResponse);
+                    request.setAttribute("lectureID", lectureID);
+                    rd.forward(request, response);
+                    return;
+                }
             }
+            //else do nothing;
         } else {
             int totalSuggestions = Integer.parseInt(request.getParameter("totalSuggestions"));
             for(int i = 1; i <= totalSuggestions; i++){
@@ -77,6 +82,7 @@ public class editResponseServlet extends HttpServlet {
     
     private String extractKeywords(String response){
         String keywords = "";
+        if(response.equals("")) return response;
         try {
             keywords = ExudeData.getInstance().filterStoppingsKeepDuplicates(response);
         } catch (InvalidDataException ex) {
