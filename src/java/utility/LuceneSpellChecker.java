@@ -38,7 +38,7 @@ public class LuceneSpellChecker {
                 String[] wordSuggestions = spellchecker.suggestSimilar(word, 5);
                 ArrayList<String> uniqueSuggestions = new ArrayList<String>();
                 for(String s: wordSuggestions){
-                    if(!uniqueSuggestions.contains(s) && !s.trim().equals(s)){
+                    if(!uniqueSuggestions.contains(s) && !s.trim().equals(word)){
                         uniqueSuggestions.add(s);
                     }
                 }
