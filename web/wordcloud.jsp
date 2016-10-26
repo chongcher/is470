@@ -4,6 +4,7 @@
     Author     : ccchia.2014
 --%>
 
+<%@page import="java.util.TreeSet"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.google.common.collect.Lists"%>
@@ -76,7 +77,7 @@
                 <input type="hidden" name="lectureID" value=<%= "\"" + lectureID + "\"" %>>
                 <table>
                     <%
-                        for(String s: keywordCount.keySet()){
+                        for(String s: new TreeSet<String>(keywordCount.keySet())){
                             boolean alreadyFiltered = filteredWords.contains(s);
                         %>
                             <tr>
