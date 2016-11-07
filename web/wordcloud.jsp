@@ -11,6 +11,7 @@
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="model.ResponseDAO"%>
+<%@page import="model.LectureDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -28,19 +29,48 @@
             }
             ResponseDAO responseDAO = (ResponseDAO) session.getAttribute("responseDAO");
             HashMap<String,Integer> keywordCount = responseDAO.getKeywordCount(lectureID);
+            int responsesCount = keywordCount.remove("responsesCount");
             String[] filteredWordsList = request.getParameterValues("filteredWords[]");
             ArrayList<String> filteredWords = new ArrayList<String>();
-            if(null != filteredWordsList){
-                filteredWords = new ArrayList<String>(Arrays.asList(filteredWordsList));
-                if(null != filteredWords && filteredWords.size()> 0){
-                    for(String s: filteredWords){
-                        //make the keyword count negative so it does not appear in the wordcloud
-                        keywordCount.put(s,-1);
+            Gson gson = new Gson();
+            String json;
+            boolean displayMissingKeywords = (null != request.getParameter("displayMissingKeywords") ) ? true : false ;
+            double tolerance = 0;
+            if(displayMissingKeywords){
+                tolerance = Double.parseDouble(request.getParameter("tolerance")) / 100;
+                double minimumResponses = responsesCount * tolerance; //this is the minimum number of responses a keyword needs to be displayed
+                LectureDAO lectureDAO = (LectureDAO) session.getAttribute("lectureDAO");
+                ArrayList<String> lectureKeywords = lectureDAO.getLectureKeywords(lectureID);
+                HashMap<String, Integer> missingKeywords = new HashMap<String, Integer>();
+                                System.out.println("Minresponse: " + minimumResponses);
+                for(String keyword: lectureKeywords){
+                    if(!keywordCount.containsKey(keyword)){
+                        missingKeywords.put(keyword, (int) Math.round(minimumResponses*2) );
+                                System.out.println("lecturekeywords: " + keyword + " value: " + Math.round(minimumResponses*2) );
+                    } else if (keywordCount.get(keyword) < minimumResponses){
+                        int currentKeywordCount = keywordCount.get(keyword);
+                        missingKeywords.put(keyword,(int) Math.round(minimumResponses - currentKeywordCount) );
+                                System.out.println("lecturekeywords: " + keyword + " original: " + currentKeywordCount + ", value: " + Math.round(minimumResponses - currentKeywordCount) );
+                        // (minimumResponses - currentKeywordCount) is done to inverse the order of the keywords
+                        // as we want keywords that have low response counts to be bigger in the wordcloud
+                        // currentKeyWordCount is guaranteed to be smaller than minimumResponses.
                     }
                 }
+                json = gson.toJson(missingKeywords);
             }
-            Gson gson = new Gson();
-            String json = gson.toJson(keywordCount);
+            else{
+                if(null != filteredWordsList){
+                    filteredWords = new ArrayList<String>(Arrays.asList(filteredWordsList));
+                    if(null != filteredWords && filteredWords.size()> 0){
+                        for(String s: filteredWords){
+                            //make the keyword count negative so it does not appear in the wordcloud
+                            keywordCount.put(s,-1);
+                        }
+                    }
+                }
+                json = gson.toJson(keywordCount);
+            }
+            
         %>
         
         <script type="text/javascript">
@@ -90,6 +120,8 @@
                         request.setAttribute("filteredWords[]", new String[0]);
                     %>
                 </table>
+                <input type="checkbox" name="displayMissingKeywords" <%= (displayMissingKeywords ? "checked" : "") %>>Display Missing Keywords<br>
+                <input type="number" name="tolerance" min="0" max="100" step="1" value=<%= "\"" + (displayMissingKeywords ? tolerance*100 : 60) + "\""%> >% Tolerance Level<br>
                 <button type="submit">Filter selected words</button>
             </form>
         </div>

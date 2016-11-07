@@ -66,11 +66,13 @@ public class LectureDAO {
         return success;
     }
     
-    public String getLectureKeywords(String lectureID){
-        String keywords = "";
+    public ArrayList<String> getLectureKeywords(String lectureID){
+        ArrayList<String> keywords = new ArrayList<String>();
         for(Lecture l: allLectures){
             if(l.getLectureID().equals(lectureID)){
-                keywords += l.getKeywords();
+                for(String keyword: l.getKeywords().split(",")){
+                    keywords.add(keyword.trim());
+                }
                 break;
             }
         }

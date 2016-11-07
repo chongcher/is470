@@ -128,13 +128,17 @@ public class ResponseDAO {
     
     public HashMap<String,Integer> getKeywordCount(String lectureID){
         HashMap<String,Integer> keywordCount = new HashMap<String,Integer>();
+        int responses = 0;
         for(Response r: allResponses){
             if(r.getLectureID().equals(lectureID)){
+                responses++;
                 String keywords = r.getKeywords();
                 String[] parts = keywords.split("\\W+");
                 for(String kw: parts){
                     if(!keywordCount.containsKey(kw)){
-                        keywordCount.put(kw,1);
+                        if(!kw.equals("")){
+                            keywordCount.put(kw,1);                        
+                        }
                     }
                     else{
                         int currentCount = keywordCount.get(kw);
@@ -143,6 +147,7 @@ public class ResponseDAO {
                 }
             }
         }
+        keywordCount.put("responsesCount", responses);
         return keywordCount;
     }
 }

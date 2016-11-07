@@ -31,7 +31,7 @@
                     </tr>
                     <tr>
                         <td>Keywords:</td>
-                        <td><input type="text" name="keywords"></td>
+                        <td><input type="text" name="keywords" placeholder="Separate keywords with a comma"></td>
                     </tr>
                 </table>
                 <button type="submit">Add Lecture!</button>
