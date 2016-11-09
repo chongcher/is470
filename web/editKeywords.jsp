@@ -33,9 +33,8 @@
                 %>
                 <h2><%= lectureID.replace("_", " ") %> Keywords</h2>
                 <input type="hidden" name="lectureID" value=<%= lectureID %>>
-                <textarea rows="4" cols="50" name="keywords">
-                    <% 
-out.println(keywords.remove(0)); //weird indentation to fix display issue
+                <textarea rows="4" cols="50" name="keywords"><%
+                    out.print(keywords.remove(0)); //weird indentation to fix display issue
                         for(String keyword: keywords){
                             out.print( ", " + keyword);
                         }

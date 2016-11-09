@@ -38,13 +38,15 @@
             double tolerance = 0;
             if(displayMissingKeywords){
                 tolerance = Double.parseDouble(request.getParameter("tolerance")) / 100;
-                double minimumResponses = responsesCount * tolerance; //this is the minimum number of responses a keyword needs to be displayed
+                double minimumResponses = (responsesCount * tolerance) + 1; 
+                    // this is the minimum number of responses a keyword needs to be displayed
+                    // +1 so that at 100% tolerance level, all keywords will be displayed
                 LectureDAO lectureDAO = (LectureDAO) session.getAttribute("lectureDAO");
                 ArrayList<String> lectureKeywords = lectureDAO.getLectureKeywords(lectureID);
                 HashMap<String, Integer> missingKeywords = new HashMap<String, Integer>();
                                 System.out.println("Minresponse: " + minimumResponses);
                 for(String keyword: lectureKeywords){
-                    if(!keywordCount.containsKey(keyword)){
+                    if(!keywordCount.containsKey(keyword)){ //not found in all responses, so make the keyword big in the wordcloud
                         missingKeywords.put(keyword, (int) Math.round(minimumResponses*2) );
                                 System.out.println("lecturekeywords: " + keyword + " value: " + Math.round(minimumResponses*2) );
                     } else if (keywordCount.get(keyword) < minimumResponses){
